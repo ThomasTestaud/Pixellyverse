@@ -19,7 +19,7 @@ document.querySelector('#app').innerHTML = `
   <div id=room-manager-btn></div>
   <div id=room-manager></div>
 `
-
+console.log('test');
 setupDrawingTool()
 setupRoomManager()
 
