@@ -41,8 +41,15 @@ canvas {
 }
 
 #room-manager {
-  border: 2px solid white;
-  border-radius: 2rem;
+  border: 1px solid white;
+  border-radius: 5px;
   position: absolute;
   bottom: 2rem;
+}
+
+#toolbar {
+  background-color: grey;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
 }
