@@ -39,6 +39,7 @@ $routes = [
     'POST'   => [
         '/users' => 'create_user',
         '/posts' => 'create_post',
+        '/rooms' => 'create_room',
     ],
     'PUT'    => [
         '/users/{id}' => 'update_user',

@@ -1,14 +1,16 @@
 <template>
   <canvas id="myCanvas" ref="canvas" @click="colorPixel"></canvas>
-
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watchEffect } from 'vue';
 import axios from 'axios';
+import { useGeneralStore } from "../stores/General.js";
 
 
-const url = "http://localhost:3000/Pixellyverse/API/index.php";
+const GeneralStore = useGeneralStore();
+
+const url = import.meta.env.VITE_API_URL;
 let zoom = 10;
 let roomId = 1;
 
@@ -18,6 +20,37 @@ let pixels = [];
 // Get the canvas element
 const canvas = ref(null);
 
+onMounted(() => {
+  // This will be executed after the component is mounted
+  console.log(canvas.value);
+
+  // Function to draw on the canvas
+  const draw = () => {
+    const ctx = canvas.value.getContext("2d");
+    canvas.value.width = window.innerWidth;
+    canvas.value.height = window.innerHeight;
+
+    for (let i = 0; i < pixels.length; i++) {
+      ctx.fillStyle = pixels[i].color;
+      ctx.fillRect(pixels[i].x * zoom, pixels[i].y * zoom, 1 * zoom, 1 * zoom);
+    }
+  };
+
+
+  watchEffect(() => {
+    pixels = GeneralStore.roomPixels;
+    draw();
+    console.log(pixels);
+  });
+});
+
+
+
+
+
+
+
+/*
 // Function to handle click event on canvas
 const colorPixel = (e) => {
   const x = Math.floor(e.clientX / zoom);
@@ -45,10 +78,10 @@ const sendPixel = (x, y, color) => {
   .catch((error) => {
     console.error('Error:', error);
   });
-};
+};*/
 
 // Function to get pixel data from the server using axios
-const getPixels = () => {
+/*const getPixels = () => {
   axios.get(`${url}?/rooms/id&id=${roomId}`, {
     headers: {
       'Content-Type': 'application/json',
@@ -61,28 +94,11 @@ const getPixels = () => {
   .catch((error) => {
     console.error('Error:', error);
   });
-};
+};*/
 
-// Function to draw on the canvas
-const draw = () => {
-  const ctx = canvas.value.getContext("2d");
-
-  // Set the canvas size to match the window size
-  canvas.value.width = window.innerWidth;
-  canvas.value.height = window.innerHeight;
-
-  // Draw a square on the canvas
-  ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, canvas.value.width, canvas.value.height);
-
-  for (let i = 0; i < pixels.length; i++) {
-    ctx.fillStyle = pixels[i].color;
-    ctx.fillRect(pixels[i].x * zoom, pixels[i].y * zoom, 1 * zoom, 1 * zoom);
-  }
-};
 
 // Call getPixels on component mount
-onMounted(getPixels);
+//onMounted(getPixels);
 </script>
 
 <style>
