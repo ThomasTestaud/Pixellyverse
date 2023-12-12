@@ -34,6 +34,7 @@ $routes = [
         '/users' => 'get_users',
         '/posts' => 'get_posts',
         '/rooms/id' => 'get_room',
+        '/rooms' => 'get_rooms',
     ],
     'POST'   => [
         '/users' => 'create_user',

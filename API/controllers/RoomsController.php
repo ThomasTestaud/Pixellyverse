@@ -10,6 +10,14 @@ class RoomsController
         echo json_encode($model->generalQuery($req));
     }
 
+    public function get_rooms()
+    {
+        $model = new Models\Database();
+        $req = "SELECT * FROM `rooms`";
+        
+        echo json_encode($model->generalQuery($req));
+    }
+
     public function update_room()
     {
         $rawData = file_get_contents("php://input");
