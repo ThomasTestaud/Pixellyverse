@@ -3,9 +3,10 @@
         <div class="flex justify-start items-center">
             
             
+            <ParamsTool />
             <RoomSelector />
             <DrawingTool />
-            <ParamsTool />
+            <DrawingProfile />
         </div>
     </header>   
 </template>
@@ -16,5 +17,6 @@ import { ref } from 'vue';
 import RoomSelector from '../components/tools/RoomSelector.vue';
 import DrawingTool from "../components/tools/DrawingTool.vue";
 import ParamsTool from './tools/ParamsTool.vue';
+import DrawingProfile from './tools/DrawingProfile.vue';
 
 </script>

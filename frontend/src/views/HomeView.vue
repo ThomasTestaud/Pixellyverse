@@ -31,27 +31,31 @@ onMounted(() => {
         1 * store.zoom
       );
     }
+
   };
 
   const drawPlayers = () => {
     const ctxPlayer = playerCanvas.value.getContext("2d");
     playerCanvas.value.width = window.innerWidth;
     playerCanvas.value.height = window.innerHeight;
-
+    
     for (let i = 0; i < store.playerPixels.length; i++) {
       ctxPlayer.fillStyle = store.playerPixels[i].color;
       ctxPlayer.fillRect(
-        store.playerPixels[i].x * store.zoom + store.offset[0] + store.playerPosition[0],
-        store.playerPixels[i].y * store.zoom + store.offset[1] + store.playerPosition[1],
-        1 * store.zoom,
-        1 * store.zoom
+        (store.playerPixels[i].x + store.playerPosition[0] + store.offset[0]),
+        (store.playerPixels[i].y + store.playerPosition[1] + store.offset[1]),
+        1,
+        1
       );
     }
+
   }
 
   let lastRoom = store.room;
   watchEffect(() => {
-    pixels = store.roomPixels;
+    console.log('refresh');
+    
+    pixels = store.roomPixels; 
     if (lastRoom !== store.room) {
       store.offset = [0,0];
       lastRoom = store.room;
@@ -62,35 +66,9 @@ onMounted(() => {
 });
 
 const moveTo = (x, y) => {
-  const thisx = Math.floor((x - store.offset[0]));
-  const thisy = Math.floor((y - store.offset[1]));
-/*
-  function getTo(futurex, futurey) {
-    if (futurex === thisx) {
-    } else {
-      if (futurex < thisx) {
-        futurex++;
-      } else {
-        futurex--;
-      }
-    }
-    if (futurey === thisy) {
-    } else {
-      if (futurey < thisy) {
-        futurey++;
-      } else {
-        futurey--;
-      }
-    }
-    if(futurex !== thisx || futurey !== thisy) {
-      setTimeout(() => {
-        getTo(futurex, futurey);
-      }, 1);
-    }
-    store.playerPosition = [futurex, futurey];
-  }
-  getTo(store.playerPosition[0], store.playerPosition[1])
-*/
+  const thisx = x - store.offset[0];
+  const thisy = y - store.offset[1];
+
   store.playerPosition = [thisx, thisy];
 }
 
