@@ -1,30 +1,22 @@
 <template>
   <canvas id="myCanvas" ref="canvas" @click="colorPixel"></canvas>
+  <canvas  @mousedown="startDrag"  ref="playerCanvas" @click="colorPixel"></canvas>
 </template>
 
 <script setup>
 import { ref, onMounted, watchEffect } from 'vue';
-import axios from 'axios';
 import { useGeneralStore } from "../stores/General.js";
 
+const store = useGeneralStore();
 
-const GeneralStore = useGeneralStore();
-
-const url = import.meta.env.VITE_API_URL;
-let zoom = 10;
-let roomId = 1;
-
-let color = "blue";
 let pixels = [];
-
-// Get the canvas element
 const canvas = ref(null);
+const playerCanvas = ref(null);
+let isDragging = false;
+let offsetX = 0;
+let offsetY = 0;
 
 onMounted(() => {
-  // This will be executed after the component is mounted
-  console.log(canvas.value);
-
-  // Function to draw on the canvas
   const draw = () => {
     const ctx = canvas.value.getContext("2d");
     canvas.value.width = window.innerWidth;
@@ -32,73 +24,103 @@ onMounted(() => {
 
     for (let i = 0; i < pixels.length; i++) {
       ctx.fillStyle = pixels[i].color;
-      ctx.fillRect(pixels[i].x * zoom, pixels[i].y * zoom, 1 * zoom, 1 * zoom);
+      ctx.fillRect(
+        pixels[i].x * store.zoom + store.offset[0],
+        pixels[i].y * store.zoom + store.offset[1],
+        1 * store.zoom,
+        1 * store.zoom
+      );
     }
   };
 
+  const drawPlayers = () => {
+    const ctxPlayer = playerCanvas.value.getContext("2d");
+    playerCanvas.value.width = window.innerWidth;
+    playerCanvas.value.height = window.innerHeight;
 
+    for (let i = 0; i < store.playerPixels.length; i++) {
+      ctxPlayer.fillStyle = store.playerPixels[i].color;
+      ctxPlayer.fillRect(
+        store.playerPixels[i].x * store.zoom + store.offset[0] + store.playerPosition[0],
+        store.playerPixels[i].y * store.zoom + store.offset[1] + store.playerPosition[1],
+        1 * store.zoom,
+        1 * store.zoom
+      );
+    }
+  }
+
+  let lastRoom = store.room;
   watchEffect(() => {
-    pixels = GeneralStore.roomPixels;
+    pixels = store.roomPixels;
+    if (lastRoom !== store.room) {
+      store.offset = [0,0];
+      lastRoom = store.room;
+    }
+    drawPlayers();
     draw();
-    console.log(pixels);
   });
 });
 
-
-
-
-
-
-
+const moveTo = (x, y) => {
+  const thisx = Math.floor((x - store.offset[0]));
+  const thisy = Math.floor((y - store.offset[1]));
 /*
-// Function to handle click event on canvas
-const colorPixel = (e) => {
-  const x = Math.floor(e.clientX / zoom);
-  const y = Math.floor(e.clientY / zoom);
+  function getTo(futurex, futurey) {
+    if (futurex === thisx) {
+    } else {
+      if (futurex < thisx) {
+        futurex++;
+      } else {
+        futurex--;
+      }
+    }
+    if (futurey === thisy) {
+    } else {
+      if (futurey < thisy) {
+        futurey++;
+      } else {
+        futurey--;
+      }
+    }
+    if(futurex !== thisx || futurey !== thisy) {
+      setTimeout(() => {
+        getTo(futurex, futurey);
+      }, 1);
+    }
+    store.playerPosition = [futurex, futurey];
+  }
+  getTo(store.playerPosition[0], store.playerPosition[1])
+*/
+  store.playerPosition = [thisx, thisy];
+}
 
-  pixels.push({ x, y, color });
+const startDrag = (e) => {
+  
+  e.preventDefault(); // Prevents undesirable text selection
 
-  sendPixel(x, y, color);
+  moveTo(e.clientX, e.clientY)
 
-  draw();
+  offsetX = e.clientX;
+  offsetY = e.clientY;
+  isDragging = true;
+
+  document.addEventListener("mousemove", drag);
+  document.addEventListener("mouseup", stopDrag);
 };
 
-// Function to send pixel to the server using axios
-const sendPixel = (x, y, color) => {
-  const data = { x, y, color };
-  axios.put(`${url}?/rooms/id&id=${roomId}`, data, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  .then((response) => {
-    pixels = response.data;
-    draw();
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-};*/
+const drag = (e) => {
+  e.preventDefault();
+  store.offset[0] += e.clientX - offsetX;
+  store.offset[1] += e.clientY - offsetY;
+  offsetX = e.clientX;
+  offsetY = e.clientY;
+};
 
-// Function to get pixel data from the server using axios
-/*const getPixels = () => {
-  axios.get(`${url}?/rooms/id&id=${roomId}`, {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-  .then((response) => {
-    pixels = response.data;
-    draw();
-  })
-  .catch((error) => {
-    console.error('Error:', error);
-  });
-};*/
-
-
-// Call getPixels on component mount
-//onMounted(getPixels);
+const stopDrag = () => {
+  isDragging = false;
+  document.removeEventListener("mousemove", drag);
+  document.removeEventListener("mouseup", stopDrag);
+};
 </script>
 
 <style>
@@ -110,7 +132,9 @@ body {
 }
 
 canvas {
-  display: block;
+  position: absolute;
+  top: 0px;
+  left: 0px;
   width: 100%;
   height: 100%;
 }

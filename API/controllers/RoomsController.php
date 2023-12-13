@@ -28,12 +28,13 @@ class RoomsController
         $data = json_decode($rawData, true);
         
         $model = new Models\Database();
-        $req = "INSERT INTO `room_pixels`(`room_id`, `x`, `y`, `color`) VALUES ( 1, :x, :y, :color)";
+        $req = "INSERT INTO `room_pixels`(`room_id`, `x`, `y`, `color`) VALUES ( :id, :x, :y, :color)";
         
         $params = [
             'x' => $data['x'],
             'y' => $data['y'],
             'color' => $data['color'],
+            'id' => $_GET['id']
         ];
         
         $model->generalQueryNoReturn($req, $params);
@@ -47,12 +48,13 @@ class RoomsController
         $data = json_decode($rawData, true);
         
         $model = new Models\Database();
-        $req = "INSERT INTO `rooms`(`user_id`, `name`, `description`) VALUES (:userId, :name, :description)";
+        $req = "INSERT INTO `rooms`(`user_id`, `name`, `description`, `status`) VALUES (:userId, :name, :description, :status)";
         
         $params = [
             'name' => $data['name'],
             'description' => $data['description'],
             'userId' => 1,
+            'status' => 0,
         ];
         
         $model->generalQueryNoReturn($req, $params);

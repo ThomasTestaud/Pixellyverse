@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket and AJAX Example</title>
+</head>
+<body>
+
+<h1>WebSocket and AJAX Example</h1>
+
+<!-- WebSocket Connection -->
+<script>
+    const socket = new WebSocket('ws://localhost:8080/websocketTest/index.php');
+
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket connection opened');
+    });
+
+    socket.addEventListener('message', (event) => {
+        console.log('WebSocket message received:', event.data);
+        // Handle WebSocket messages as needed
+    });
+
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed');
+    });
+
+    // Function to send a message via WebSocket
+    function sendMessage(message) {
+        socket.send(message);
+    }
+</script>
+
+<!-- AJAX Request -->
+<script>
+    // Function to make an AJAX request
+    function sendAjaxRequest() {
+        fetch('http://localhost/ajax-endpoint.php')
+            .then(response => response.text())
+            .then(data => {
+                console.log('AJAX response:', data);
+                // Handle AJAX response as needed
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+
+<!-- UI Buttons -->
+<button onclick="sendMessage('Hello WebSocket!')">Send WebSocket Message</button>
+<button onclick="sendAjaxRequest()">Send AJAX Request</button>
+
+</body>
+</html>
