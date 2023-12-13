@@ -10,9 +10,6 @@ export const useGeneralStore = defineStore('GeneralStore', {
       playerPosition: [0, 0],
       playerPixels: [
         {x: 0, y: 0, color: 'black'},
-        {x: 0, y: 1, color: 'blue'},
-        {x: 0, y: 2, color: 'red'},
-        {x: 0, y: 3, color: 'green'},
       ],
     }
   },

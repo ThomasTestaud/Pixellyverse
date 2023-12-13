@@ -42,10 +42,10 @@ onMounted(() => {
     for (let i = 0; i < store.playerPixels.length; i++) {
       ctxPlayer.fillStyle = store.playerPixels[i].color;
       ctxPlayer.fillRect(
-        (store.playerPixels[i].x + store.playerPosition[0] + store.offset[0]),
-        (store.playerPixels[i].y + store.playerPosition[1] + store.offset[1]),
-        1,
-        1
+        (store.playerPixels[i].x + store.playerPosition[0] + store.offset[0]) * store.zoom,
+        (store.playerPixels[i].y + store.playerPosition[1] + store.offset[1]) * store.zoom,
+        1 * store.zoom,
+        1 * store.zoom
       );
     }
 
@@ -65,11 +65,35 @@ onMounted(() => {
   });
 });
 
+let move = null;
 const moveTo = (x, y) => {
-  const thisx = x - store.offset[0];
-  const thisy = y - store.offset[1];
+  clearInterval(move);
+  const thisx = Math.floor((x - store.offset[0]) / store.zoom);
+  const thisy = Math.floor((y - store.offset[1]) / store.zoom);
 
-  store.playerPosition = [thisx, thisy];
+  //Go to position slowly
+  move = setInterval(() => {
+    if (store.playerPosition[0] < thisx) {
+      store.playerPosition[0] += 1;
+    }
+    if (store.playerPosition[0] > thisx) {
+      store.playerPosition[0] -= 1;
+    }
+    if (store.playerPosition[1] < thisy) {
+      store.playerPosition[1] += 1;
+    }
+    if (store.playerPosition[1] > thisy) {
+      store.playerPosition[1] -= 1;
+    }
+    if (store.playerPosition[0] === thisx && store.playerPosition[1] === thisy) {
+      clearInterval(move);
+    }
+  }, 10);
+
+
+
+
+  //store.playerPosition = [thisx, thisy];
 }
 
 const startDrag = (e) => {
