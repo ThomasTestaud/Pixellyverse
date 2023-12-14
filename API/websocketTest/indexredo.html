@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Drawing</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gridCanvas"></canvas>
+
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById('gridCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Set canvas size to match the screen size
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Set the grid cell size
+        const cellSize = 10;
+
+        // Array to store the drawn elements
+        const drawnElements = [];
+
+        // Function to draw the grid on the canvas
+        function drawGrid() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (let x = 0; x < canvas.width; x += cellSize) {
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+            }
+
+            for (let y = 0; y < canvas.height; y += cellSize) {
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+            }
+
+            ctx.strokeStyle = '#ddd';
+            ctx.stroke();
+        }
+
+        // Function to draw a square at the specified coordinates
+        function drawSquare(x, y, color) {
+            ctx.fillStyle = color;
+            ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        }
+
+        // Event listener for mouse clicks on the canvas
+        canvas.addEventListener('click', function(event) {
+            const clickedX = Math.floor(event.clientX / cellSize);
+            const clickedY = Math.floor(event.clientY / cellSize);
+            const color = 'black';
+            const pixel = { x: clickedX, y: clickedY, color };
+            // Push the drawn element to the array
+            drawnElements.push(pixel);
+
+            // Redraw the grid and all the elements
+            drawGrid();
+            drawnElements.forEach(element => {
+                drawSquare(element.x, element.y, element.color);
+            });
+
+            sendPixel(pixel) 
+        });
+
+        // Initial draw of the grid
+        drawGrid();
+
+
+
+
+
+
+
+        //WEBSOCKET
+
+
+
+    const socket = new WebSocket('ws://localhost:8080/websocketTest/index.php');
+
+
+
+    let chat = document.getElementById('chat');
+    let input = document.getElementById('input');
+
+    // Function to send a message via WebSocket
+    function sendPixel(pixel) {
+        socket.send(JSON.stringify(pixel));
+    }
+
+
+
+    socket.addEventListener('open', (event) => {
+        console.log('WebSocket connection opened');
+    });
+
+    socket.addEventListener('message', (event) => {
+        //console.log('WebSocket message received:', JSON.parse(event.data));
+        // Handle WebSocket messages as needed
+        console.log(JSON.parse(event.data))
+        //console.log(JSON.parse(event.data));
+        drawnElements.push(JSON.parse(event.data));
+        //console.log(drawnElements);
+        // Redraw the grid and all the elements
+        drawGrid();
+            drawnElements.forEach(element => {
+                drawSquare(element.x, element.y, element.color);
+            });
+    });
+
+    socket.addEventListener('close', (event) => {
+        console.log('WebSocket connection closed');
+    });
+    </script>
+</body>
+</html>

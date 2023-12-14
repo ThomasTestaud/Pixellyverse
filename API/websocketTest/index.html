@@ -10,9 +10,32 @@
 
 <h1>WebSocket and AJAX Example</h1>
 
+<div id="chat">
+
+</div>
+<!-- UI Buttons -->
+<input type="text" id="input"></input>
+<button onclick="sendMessage()">Send WebSocket Message</button>
+
 <!-- WebSocket Connection -->
 <script>
+
+
     const socket = new WebSocket('ws://localhost:8080/websocketTest/index.php');
+
+
+
+    let chat = document.getElementById('chat');
+    let input = document.getElementById('input');
+
+    // Function to send a message via WebSocket
+    function sendMessage() {
+        socket.send(input.value);
+        chat.innerHTML += input.value;
+        input.value = '';
+    }
+
+
 
     socket.addEventListener('open', (event) => {
         console.log('WebSocket connection opened');
@@ -21,37 +44,20 @@
     socket.addEventListener('message', (event) => {
         console.log('WebSocket message received:', event.data);
         // Handle WebSocket messages as needed
+        chat.innerHTML += event.data;
     });
 
     socket.addEventListener('close', (event) => {
         console.log('WebSocket connection closed');
     });
 
-    // Function to send a message via WebSocket
-    function sendMessage(message) {
-        socket.send(message);
-    }
+
+    
 </script>
 
-<!-- AJAX Request -->
-<script>
-    // Function to make an AJAX request
-    function sendAjaxRequest() {
-        fetch('http://localhost/ajax-endpoint.php')
-            .then(response => response.text())
-            .then(data => {
-                console.log('AJAX response:', data);
-                // Handle AJAX response as needed
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-    }
-</script>
 
-<!-- UI Buttons -->
-<button onclick="sendMessage('Hello WebSocket!')">Send WebSocket Message</button>
-<button onclick="sendAjaxRequest()">Send AJAX Request</button>
+
+
 
 </body>
 </html>

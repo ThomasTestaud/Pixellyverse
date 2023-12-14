@@ -101,21 +101,21 @@ const startDrag = (e) => {
   e.preventDefault(); // Prevents undesirable text selection
 
   moveTo(e.clientX, e.clientY)
-
+/*
   offsetX = e.clientX;
   offsetY = e.clientY;
   isDragging = true;
 
   document.addEventListener("mousemove", drag);
-  document.addEventListener("mouseup", stopDrag);
+  document.addEventListener("mouseup", stopDrag);*/
 };
 
 const drag = (e) => {
-  e.preventDefault();
+  /*e.preventDefault();
   store.offset[0] += e.clientX - offsetX;
   store.offset[1] += e.clientY - offsetY;
   offsetX = e.clientX;
-  offsetY = e.clientY;
+  offsetY = e.clientY;*/
 };
 
 const stopDrag = () => {
